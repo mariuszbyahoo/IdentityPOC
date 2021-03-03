@@ -1,0 +1,38 @@
+﻿
+
+<div class="long-title"><h3>Logowanie</h3></div>
+<div id="form-container">
+    @using (Html.BeginForm())
+    {
+
+        using (Html.DevExtreme().ValidationGroup())
+        {
+
+            @Html.AntiForgeryToken()
+
+            @(Html.DevExtreme().Form<LoginViewModel>()
+            .ShowValidationSummary(true)
+            .Items(items => {
+
+                items.AddGroup()
+                      .Items(groupItems =>
+                      {
+                          groupItems.AddSimpleFor(m => m.KodKreskowy)
+                              .Editor(e => e.TextBox());
+
+                          groupItems.AddSimpleFor(m => m.Haslo)
+                              .Editor(e => e.TextBox().Mode(TextBoxMode.Password));
+                      });
+                items.AddButton()
+                            .HorizontalAlignment(HorizontalAlignment.Left)
+                            .ButtonOptions(b => b.Text("Zaloguj")
+                                .Type(ButtonType.Normal)
+                                .UseSubmitBehavior(true)
+                                );
+
+            })
+            .FormData(Model)
+        )
+        }
+    }
+</div>

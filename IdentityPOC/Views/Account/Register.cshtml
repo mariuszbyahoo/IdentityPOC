@@ -1,0 +1,44 @@
+﻿
+<div class="long-title"><h3>Rejestracja</h3></div>
+<div id="form-container">
+    @using (Html.BeginForm())
+    {
+
+        using (Html.DevExtreme().ValidationGroup())
+        {
+
+            @Html.AntiForgeryToken()
+
+            @(Html.DevExtreme().Form<RegisterViewModel>()
+            .ShowValidationSummary(true)
+            .Items(items => {
+
+                items.AddGroup()
+                      .Items(groupItems =>
+                      {
+                          groupItems.AddSimpleFor(m => m.Imie)
+                              .Editor(e => e.TextBox());
+                          groupItems.AddSimpleFor(m => m.Nazwisko)
+                              .Editor(e => e.TextBox());
+                          groupItems.AddSimpleFor(m => m.KodKreskowy)
+                              .Editor(e => e.TextBox());
+
+                          groupItems.AddSimpleFor(m => m.Haslo)
+                              .Editor(e => e.TextBox().Mode(TextBoxMode.Password));
+                          groupItems.AddSimpleFor(m => m.PotwierdzHaslo)
+                              .Editor(e => e.TextBox().Mode(TextBoxMode.Password));
+
+                      });
+                items.AddButton()
+                            .HorizontalAlignment(HorizontalAlignment.Left)
+                            .ButtonOptions(b => b.Text("Zarejestruj")
+                                .Type(ButtonType.Normal)
+                                .UseSubmitBehavior(true)
+                                );
+
+            })
+            .FormData(Model)
+        )
+        }
+    }
+</div>

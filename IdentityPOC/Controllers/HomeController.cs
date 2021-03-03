@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using IdentityPOC.Models;
 using Microsoft.AspNetCore.Identity;
 using IdentityPOC.Data.DALs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IdentityPOC.Controllers
 {
@@ -22,15 +23,12 @@ namespace IdentityPOC.Controllers
             _userMgr = userMgr;
         }
 
+        [Authorize]
         public IActionResult Index()
         {
-            return View();
+            var vm = new RaportowanieOperacjiViewModel();
+            return View(vm);
         }
-
-        //public Task<ActionResult> Reporting()
-        //{
-        //    var user = _userMgr.Get
-        //}
 
         public IActionResult Privacy()
         {

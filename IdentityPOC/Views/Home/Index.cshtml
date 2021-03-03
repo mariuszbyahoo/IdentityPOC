@@ -2,11 +2,70 @@
     ViewData["Title"] = "Home Page";
 }
 
+@model RaportowanieOperacjiViewModel
+
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    @if(TempData["Message"] != null && string.IsNullOrWhiteSpace(TempData["Message"].ToString()))
+    @if (TempData["Message"] != null && !string.IsNullOrWhiteSpace(TempData["Message"].ToString()))
     {
         <p>@TempData["Message"].ToString()</p>
     }
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+    @(Html.DevExtreme().Popup()
+        .ID("confirm-popup")
+        .Width(250)
+        .Height(150)
+        .ShowTitle(true)
+        .Title("Zaraportowano!")
+        .Visible(false)
+        .DragEnabled(false)
+        .CloseOnOutsideClick(true)
+        .ContentTemplate(new TemplateName("popup-template"))
+    )
+
+    @using (Html.BeginForm())
+    {
+
+        using (Html.DevExtreme().ValidationGroup())
+        {
+
+            @Html.AntiForgeryToken()
+
+            @(Html.DevExtreme().Form<RaportowanieOperacjiViewModel>()
+            .ShowValidationSummary(true)
+            .Items(items => {
+
+                items.AddGroup()
+                .Caption("Raportowanie Operacji:")
+                      .Items(groupItems =>
+                      {
+                          groupItems.AddSimpleFor(m => m.KodOperacji)
+                              .Editor(e => e.TextBox()).IsRequired(true).Name("kodOperacji");
+
+                          groupItems.AddSimpleFor(m => m.IloscOperacji)
+                              .Editor(e => e.NumberBox()).IsRequired(true).Name("iloscOperacji");
+                      });
+                items.AddButton()
+                            .HorizontalAlignment(HorizontalAlignment.Left)
+                            .ButtonOptions(b => b.Text("Raportuj")
+                                .Type(ButtonType.Normal)
+                                .OnClick(
+                                    @<script>
+                                        function showPopup(data)
+                                        {
+                                            var popup = $("#confirm-popup").dxPopup("instance");
+                                            popup.show();
+                                        }
+                                    </script>
+                                    ));
+            })
+            .FormData(Model)
+        )
+        }
+    }
+    @using (Html.DevExtreme().NamedTemplate("popup-template"))
+    {
+        <div class="text-center">
+            Przyjąłem
+        </div>
+    }
 </div>

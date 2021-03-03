@@ -1,6 +1,10 @@
 ﻿
 
 <div class="long-title"><h3>Logowanie</h3></div>
+@if (ViewBag.Message != null)
+{
+    <div class="text-center">@ViewBag.Message</div>
+}
 <div id="form-container">
     @using (Html.BeginForm())
     {

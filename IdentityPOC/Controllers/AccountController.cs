@@ -20,8 +20,16 @@ namespace IdentityPOC.Controllers
             _userManager = userManager;
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            TempData["Message"] = "Wylogowano Użytkownika";
+            await _signInManager.SignOutAsync();
+            return RedirectToAction(nameof(Login));
+        }
+
         [HttpGet]
-        public async Task<IActionResult> Register()
+        public IActionResult Register()
         {
             var vm = new RegisterViewModel();
             return View(vm);
@@ -38,12 +46,22 @@ namespace IdentityPOC.Controllers
                     user = new AppUser()
                     {
                         UserName = vm.KodKreskowy,
+                        KodKreskowy = vm.KodKreskowy,
                         Imie = vm.Imie,
                         Nazwisko = vm.Nazwisko,
                         Stanowisko = vm.Stanowisko
                     };
                     var res = await _userManager.CreateAsync(user, vm.Haslo);
-                    TempData["Message"] = $"Zarejestrowano użytkownika: '{user.ImieNazwisko}'";
+                    if (res.Succeeded)
+                    {
+                        TempData["Message"] = $"Zarejestrowano użytkownika: '{user.ImieNazwisko}'";
+                        return RedirectToAction(nameof(Login));
+                    }
+                    else
+                    {
+                        ViewBag.Message = $"Błędy: {res.Errors}";
+                        return View(vm);
+                    }
                 }
             }
             catch(Exception ex)
@@ -54,7 +72,7 @@ namespace IdentityPOC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Login()
+        public IActionResult Login()
         {
             var vm = new LoginViewModel();
             return View(vm);
@@ -68,22 +86,20 @@ namespace IdentityPOC.Controllers
             {
                 var res = await _signInManager.PasswordSignInAsync(user, vm.Haslo, true, false);
 
-                if(res.Succeeded)
+                if (res.Succeeded)
+                {
+                    TempData["Message"] = $"Zalogowano jako: {user.ImieNazwisko}";
                     return RedirectToAction("Index", "Home");
+                }
                 else
                 {
                     ViewBag.Message = "Niepoprawne hasło dla danego użytkownika";
-                    return RedirectToAction(nameof(Login));
+                    return View(vm);
                 }
             }
 
             ViewBag.Message = "Niepoprawny login";
-            return RedirectToAction(nameof(Login));
-        }
-
-        public IActionResult Index()
-        {
-            return View();
+            return View(vm);
         }
     }
 }
